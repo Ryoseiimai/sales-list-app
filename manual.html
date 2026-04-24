@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>営業リスト作成アプリ ― 使い方マニュアル</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #D97757;
+    --orange-dark: #b85f3e;
+    --orange-light: #F2A183;
+    --cream: #F5F0E8;
+    --ink: #1A1A1A;
+    --gray: #666;
+    --light: #FAF6F0;
+    --border: #E8E3DA;
+    --green: #6BB76B;
+    --yellow: #E8B84E;
+    --red: #D65C5C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: 'Noto Sans JP', system-ui, sans-serif;
+    background: var(--light);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .topbar {
+    background: white;
+    border-bottom: 3px solid var(--orange);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand .logo {
+    font-size: 36px;
+    background: linear-gradient(135deg, var(--orange), var(--orange-light));
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(217, 119, 87, 0.3);
+  }
+  .brand h1 { font-size: 20px; font-weight: 900; margin-bottom: 2px; }
+  .brand .tagline { font-size: 12px; color: var(--gray); }
+  .nav-back {
+    background: var(--orange);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .nav-back:hover { background: var(--orange-dark); }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 28px 80px;
+  }
+
+  .toc {
+    background: white;
+    border-radius: 14px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .toc h2 {
+    font-size: 15px;
+    color: var(--orange);
+    font-weight: 800;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--cream);
+  }
+  .toc ol {
+    padding-left: 24px;
+    font-size: 14px;
+  }
+  .toc li { margin-bottom: 6px; }
+  .toc a {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--orange); }
+
+  section.chapter {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+  }
+  section.chapter h2 {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 3px solid var(--orange);
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  section.chapter h2 .num {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--orange);
+    font-size: 18px;
+    font-weight: 700;
+  }
+  section.chapter h3 {
+    font-size: 17px;
+    font-weight: 800;
+    margin: 28px 0 10px;
+    color: var(--orange-dark);
+  }
+  section.chapter p { margin-bottom: 14px; }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    background: var(--light);
+    border-left: 4px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 10px;
+  }
+  .step-num {
+    background: var(--orange);
+    color: white;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .step-body { flex: 1; font-size: 14px; }
+  .step-body strong { color: var(--orange-dark); }
+
+  .tip {
+    background: rgba(217, 119, 87, 0.08);
+    border: 1px solid rgba(217, 119, 87, 0.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .tip::before { content: "💡 "; }
+  .warn {
+    background: rgba(255, 180, 0, 0.08);
+    border: 1px solid rgba(255, 180, 0, 0.3);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #8a5a30;
+  }
+  .warn::before { content: "⚠️ "; }
+  .ok {
+    background: rgba(107, 183, 107, 0.1);
+    border: 1px solid rgba(107, 183, 107, 0.3);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #3d6f3d;
+  }
+  .ok::before { content: "✅ "; }
+  .danger {
+    background: rgba(214, 92, 92, 0.08);
+    border: 1px solid rgba(214, 92, 92, 0.3);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    color: #8a3d3d;
+  }
+  .danger::before { content: "🚨 "; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(217, 119, 87, 0.1);
+    color: var(--orange-dark);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 600;
+  }
+  pre {
+    background: #1a1a1a;
+    color: #e8e8e8;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: var(--cream);
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .color-example {
+    display: inline-block;
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    margin-right: 8px;
+    vertical-align: middle;
+    border: 1px solid var(--border);
+  }
+  .recipe {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 14px;
+  }
+  .recipe h4 {
+    font-size: 14px;
+    color: var(--orange-dark);
+    margin-bottom: 10px;
+  }
+  .recipe p { margin-bottom: 10px; font-size: 13px; }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 12px;
+    color: var(--gray);
+  }
+
+  @media print {
+    .topbar, .nav-back { display: none; }
+    body { background: white; }
+    .container { padding: 20px; }
+    section.chapter { box-shadow: none; border: none; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">📘</div>
+    <div>
+      <h1>営業リスト作成アプリ ― 使い方マニュアル</h1>
+      <p class="tagline">超丁寧版 / 初めての人でも10分で使える</p>
+    </div>
+  </div>
+  <a href="/" class="nav-back">← アプリに戻る</a>
+</header>
+
+<div class="container">
+
+<div class="toc">
+  <h2>目次</h2>
+  <ol>
+    <li><a href="#ch1">このアプリって何？</a></li>
+    <li><a href="#ch2">最初の1回だけやる準備</a></li>
+    <li><a href="#ch3">毎回の起動手順（2回目以降）</a></li>
+    <li><a href="#ch4">入力の書き方</a></li>
+    <li><a href="#ch5">実行と進捗の見方</a></li>
+    <li><a href="#ch6">結果の読み方（色分け）</a></li>
+    <li><a href="#ch7">ダウンロード方法</a></li>
+    <li><a href="#ch8">よくある使い方レシピ</a></li>
+    <li><a href="#ch9">トラブルシューティング</a></li>
+    <li><a href="#ch10">法律と倫理（送信前に絶対読む）</a></li>
+  </ol>
+</div>
+
+<section class="chapter" id="ch1">
+  <h2><span class="num">01</span>このアプリって何？</h2>
+  <p>「<strong>会社名とURL</strong>」を一覧で貼り付けると、そこからメールアドレス・お問い合わせフォーム・特商法ページなどを自動で探してくれるアプリです。</p>
+  <p>手動でやると1社3〜5分かかる作業が、100社で5分以内に終わります。営業リスト作成の前処理を一気に自動化するやつ。</p>
+  <div class="ok">
+    <strong>できること</strong>：<br>
+    ・公式サイトから <code>info@〜</code> 系メアドの抽出<br>
+    ・問い合わせフォームのURL抽出<br>
+    ・特商法・運営会社・プライバシーページも掘る<br>
+    ・CSV / Excel形式でダウンロード
+  </div>
+  <div class="warn">
+    <strong>できないこと</strong>：<br>
+    ・<strong>会社名リストを0から作ること</strong>（会社名とURLは自分で用意する必要あり）<br>
+    ・Bot対策が強いサイトの突破（Playwright等が必要）<br>
+    ・直接メール送信（これは別ツール）
+  </div>
+</section>
+
+<section class="chapter" id="ch2">
+  <h2><span class="num">02</span>最初の1回だけやる準備</h2>
+  <p>このアプリは初回起動時に必要なライブラリを自動でインストールします。2-3分かかります。</p>
+
+  <h3>準備：Python が入っているか確認</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      Windowsの「スタート」 → 「<code>PowerShell</code>」を検索して開く（黒い画面が出る）
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <code>python --version</code> と打ってEnter。<strong>「Python 3.9」以降の表示が出ればOK</strong>。
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      「そんなコマンドない」と言われたら <a href="https://www.python.org/downloads/" target="_blank">python.org</a> から最新版をダウンロード → インストール時に<strong>「Add Python to PATH」にチェック</strong>を忘れずに。
+    </div>
+  </div>
+
+  <div class="tip">
+    Macの人：Macには最初から Python が入っています。ターミナルで <code>python3 --version</code>。3.9以降ならOK。
+  </div>
+</section>
+
+<section class="chapter" id="ch3">
+  <h2><span class="num">03</span>毎回の起動手順（2回目以降）</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      デスクトップの <code>営業リスト作成アプリ</code> フォルダを開く
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong><code>start.bat</code></strong> をダブルクリック
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      黒いウィンドウが開く。「<strong>営業リスト作成アプリ 起動中...</strong>」と表示される
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      「<strong>http://localhost:5000</strong>」が表示されたら、<strong>ブラウザでそのアドレスを開く</strong>（ブクマしとくと便利）
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      アプリ画面が出たら起動完了。ここから使える。
+    </div>
+  </div>
+
+  <div class="warn">
+    <strong>終わらせる時</strong>：黒いウィンドウで <code>Ctrl+C</code> を押す、または×ボタンで閉じる。<br>
+    閉じないとPCのリソースを使い続けるので、使い終わったら必ず閉じて。
+  </div>
+</section>
+
+<section class="chapter" id="ch4">
+  <h2><span class="num">04</span>入力の書き方</h2>
+  <p>テキストボックスに「<strong>1行に1社</strong>」の形で、「会社名」と「URL」をカンマ（<code>,</code>）またはタブで区切って書きます。</p>
+
+  <h3>基本形（2列）</h3>
+  <pre><code>リクルートホールディングス, https://recruit-holdings.com/ja/
+パソナグループ, https://www.pasonagroup.co.jp/
+ウィルグループ, https://willgroup.co.jp/</code></pre>
+
+  <h3>業種も入れたい場合（3列）</h3>
+  <pre><code>エン・ジャパン, https://corp.en-japan.com/, 求人媒体
+マイナビ, https://www.mynavi.jp/company/, 求人媒体
+ビズリーチ, https://www.visional.inc/ja/, HR Tech</code></pre>
+
+  <h3>コメント行</h3>
+  <p><code>#</code>で始まる行は無視されます。メモを書いておくのに便利。</p>
+  <pre><code># 2026年5月 営業対象リスト
+# 人材系大手のみ
+リクルートホールディングス, https://recruit-holdings.com/ja/
+パーソルホールディングス, https://www.persol-group.co.jp/</code></pre>
+
+  <h3>CSVアップロード</h3>
+  <p>既にCSVファイルがあるなら「<strong>📎 CSVアップロード</strong>」ボタンで読み込めます。1列目が会社名、2列目がURL、3列目が業種（任意）。</p>
+
+  <div class="tip">
+    <strong>「デフォルト業種」入力欄</strong>を使うと、3列目を書いていない全社にまとめて業種を付けられる（例：全員が人材系なら「人材紹介」と入れておく）。
+  </div>
+
+  <div class="warn">
+    <strong>URLは <code>https://</code> から書く</strong>のがおすすめ。省略しても動くけど、確実にするため。
+  </div>
+</section>
+
+<section class="chapter" id="ch5">
+  <h2><span class="num">05</span>実行と進捗の見方</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      「<strong>▶ 収集開始</strong>」ボタンを押す
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      右上のバッジが「<strong>実行中...</strong>」オレンジ色に変わる
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>進捗バー</strong>が伸びていき、「3 / 30」のようにカウントが進む
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      結果テーブルに<strong>1社ずつリアルタイムで追加</strong>される
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      完了すると右上バッジが「<strong>完了</strong>」緑色になる → ダウンロードボタンが有効化
+    </div>
+  </div>
+
+  <h3>目安の時間</h3>
+  <table>
+    <tr><th>件数</th><th>目安時間</th></tr>
+    <tr><td>10社</td><td>約1分</td></tr>
+    <tr><td>50社</td><td>約5分</td></tr>
+    <tr><td>100社</td><td>約10分</td></tr>
+  </table>
+  <p class="tip">デフォルトの「各社の間隔」は2秒。速くしたい時は1秒に下げられるけど、<strong>サーバー負荷がかかりやすくなる</strong>ので通常はそのままで。</p>
+</section>
+
+<section class="chapter" id="ch6">
+  <h2><span class="num">06</span>結果の読み方（色分け）</h2>
+  <p>結果テーブルは3色で分けられる：</p>
+  <table>
+    <tr>
+      <th>色</th><th>意味</th><th>次のアクション</th>
+    </tr>
+    <tr>
+      <td><span class="color-example" style="background:#F0F9F0"></span>緑</td>
+      <td><strong>メアド取得成功</strong></td>
+      <td>営業メール送信対象（※法令確認必須）</td>
+    </tr>
+    <tr>
+      <td><span class="color-example" style="background:#FFFBE8"></span>黄</td>
+      <td>問い合わせフォームのみ</td>
+      <td>フォームから送信</td>
+    </tr>
+    <tr>
+      <td><span class="color-example" style="background:#FDF0F0"></span>赤</td>
+      <td>どちらも取れず</td>
+      <td>URL見直し or 手動調査 or 電話</td>
+    </tr>
+  </table>
+
+  <h3>統計カード</h3>
+  <p>結果パネル上部の3つの数字：</p>
+  <ul style="padding-left: 24px;">
+    <li><strong>メアド取得</strong>：緑行の件数</li>
+    <li><strong>フォームあり</strong>：黄行の件数</li>
+    <li><strong>取得不可</strong>：赤行の件数</li>
+  </ul>
+
+  <div class="tip">
+    メアド欄に <code>;</code> 区切りで複数アドレスが入ることもあります（例：<code>info@〜; contact@〜</code>）。その時は<strong>最も一般的な</strong> <code>info@</code> <strong>系を優先</strong>して使うといい。
+  </div>
+</section>
+
+<section class="chapter" id="ch7">
+  <h2><span class="num">07</span>ダウンロード方法</h2>
+  <p>完了後、「📥 CSV」「📊 Excel」ボタンが有効化される。</p>
+
+  <h3>どっちを選ぶか</h3>
+  <table>
+    <tr><th>形式</th><th>特徴</th><th>こんな時</th></tr>
+    <tr>
+      <td><strong>CSV</strong></td>
+      <td>テキストファイル。軽い</td>
+      <td>Google Sheetsに貼る / 他ツールに取り込む</td>
+    </tr>
+    <tr>
+      <td><strong>Excel</strong></td>
+      <td>色分け装飾付き。読みやすい</td>
+      <td>そのまま自分で見る / 共有する</td>
+    </tr>
+  </table>
+
+  <h3>保存場所</h3>
+  <p>ダウンロードしたファイルは、ブラウザのデフォルトDL先（通常は <code>ダウンロード</code> フォルダ）に入ります。</p>
+  <p>また、同じファイルがアプリの <code>data/results/</code> フォルダ内に<strong>ジョブID付きで自動保存</strong>されている（再ダウンロード用）。</p>
+</section>
+
+<section class="chapter" id="ch8">
+  <h2><span class="num">08</span>よくある使い方レシピ</h2>
+
+  <div class="recipe">
+    <h4>🎯 レシピ1：人材系の会社50社にアプローチしたい</h4>
+    <p>Step 1：Google検索「人材紹介会社 一覧 東京」とかで、会社名とURLをメモ</p>
+    <p>Step 2：メモをアプリに貼り付け（デフォルト業種「人材紹介」）</p>
+    <p>Step 3：収集開始 → Excel DL → 営業担当に渡す</p>
+  </div>
+
+  <div class="recipe">
+    <h4>🎯 レシピ2：既存のお客様リストを更新</h4>
+    <p>Step 1：既存CSVを「📎 CSVアップロード」で読み込む</p>
+    <p>Step 2：そのまま収集開始</p>
+    <p>Step 3：結果とぶつけて「メアドが変わったお客様」を洗い出す</p>
+  </div>
+
+  <div class="recipe">
+    <h4>🎯 レシピ3：Claude Codeと併用</h4>
+    <p>Step 1：Claude Code に「〇〇業種の会社30社リストアップして、会社名とURL出して」と頼む</p>
+    <p>Step 2：返ってきたリストをこのアプリに貼る</p>
+    <p>Step 3：メアドまで一気に取得</p>
+    <p class="tip" style="margin-top: 10px;">Claude Code ＋ このアプリ の組み合わせが最強</p>
+  </div>
+
+  <div class="recipe">
+    <h4>🎯 レシピ4：展示会・イベントでもらった名刺リスト</h4>
+    <p>名刺をOCRアプリ（Camcardとか）で取り込む → 会社名とURL抽出 → このアプリで一括スクレイピング</p>
+    <p>→ 後日「先日は名刺交換ありがとうございました」メール送る時の下調べに</p>
+  </div>
+</section>
+
+<section class="chapter" id="ch9">
+  <h2><span class="num">09</span>トラブルシューティング</h2>
+
+  <h3>❌ start.bat を押しても黒いウィンドウがすぐ消える</h3>
+  <p>Python が入ってないか、PATHが通ってない可能性。PowerShellで <code>python --version</code> を打って確認。</p>
+
+  <h3>❌ 「Address already in use」エラー</h3>
+  <p>すでにアプリが起動中。タスクマネージャーで <code>python.exe</code> を終了してから再起動、またはPCを再起動。</p>
+
+  <h3>❌ 取得できる件数がやたら少ない</h3>
+  <p>URLが間違ってる可能性。URLの先頭に <code>https://</code> が付いているか、スペルミスがないか確認。</p>
+  <p>または、対象サイトが<strong>Bot対策が強い</strong>（スタッフサービス等、大手派遣会社に多い）。この場合は手動で調べるしかない。</p>
+
+  <h3>❌ メアドが取れたけど、明らかにサンプルっぽい（<code>sample@〜</code>）</h3>
+  <p>アプリ側で自動除外してるつもりだけど、漏れることはある。目視でチェックして怪しいのは削除して。</p>
+
+  <h3>❌ 途中で止まった</h3>
+  <p>黒いウィンドウにエラーが出てる可能性。そのスクショを涼晴 or 開発者に送って。</p>
+
+  <h3>❌ ブラウザで localhost:5000 開いても「このサイトに到達できません」</h3>
+  <p>黒いウィンドウがまだ起動中じゃない可能性。数秒待ってから再度アクセス。それでもダメなら start.bat もう一回。</p>
+</section>
+
+<section class="chapter" id="ch10">
+  <h2><span class="num">10</span>法律と倫理（送信前に絶対読む）</h2>
+  <div class="danger">
+    <strong>このアプリはメアドを「取得」するだけ。「送信」は別問題です。</strong><br>
+    取得したメアドに営業メールを送る前に、以下を必ず確認してください。
+  </div>
+
+  <h3>① 特定電子メール法（特電法）</h3>
+  <p>日本国内では、営業メール送信には原則として<strong>事前の同意</strong>が必要です。</p>
+  <p>同意なしで送れるのは、主に：</p>
+  <ul style="padding-left: 24px;">
+    <li>相手が名刺等で自分のメアドを<strong>自ら通知</strong>してきた場合</li>
+    <li>相手が<strong>公開webサイト上に送信目的を明記して</strong>メアドを公開している場合（← この場合でも、送信拒否の申し出があれば即停止）</li>
+  </ul>
+  <p>単に「ホームページに載ってたから」で送るのは<strong>違反の可能性</strong>があります。</p>
+
+  <h3>② 送信時の必須事項</h3>
+  <p>送信するメールには必ず以下を記載：</p>
+  <ul style="padding-left: 24px;">
+    <li>送信者の氏名・名称</li>
+    <li>送信者の住所</li>
+    <li>配信停止方法（リンク or メアド）</li>
+  </ul>
+
+  <h3>③ スクレイピングの利用規約</h3>
+  <p>各社のwebサイトには利用規約があり、<strong>一部はスクレイピングを禁止</strong>しています。</p>
+  <p>大量アクセスはサーバー負荷になり、迷惑行為扱いされる可能性もある。<strong>このアプリは各社の間隔2秒をデフォルト</strong>にしてあるけど、極端に短くしないで。</p>
+
+  <h3>④ 涼晴ルール</h3>
+  <div class="warn">
+    <strong>外部メッセージは送信前に自分の目で確認。</strong><br>
+    Claudeが作った下書きでも、送信ボタンは人間が押す。間違った情報を送ると取り返しつかない。
+  </div>
+
+  <div class="ok">
+    <strong>推奨される使い方</strong>：<br>
+    ・すでに取引のある相手 or 名刺交換済みの相手<br>
+    ・問い合わせフォームからの丁寧な初回コンタクト<br>
+    ・展示会・セミナー等での<strong>事前同意取得済み</strong>の対象
+  </div>
+</section>
+
+</div>
+
+<footer>
+  営業リスト作成アプリ v1.0 ／ 制作：今井涼晴 ／ 2026年4月<br>
+  不具合・改善要望は涼晴まで
+</footer>
+
+</body>
+</html>

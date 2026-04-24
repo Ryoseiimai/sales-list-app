@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>営業リスト作成アプリ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">🎯</div>
+    <div>
+      <h1>営業リスト作成アプリ</h1>
+      <p class="tagline">会社名＋URLを投げるだけ。メアド・問い合わせフォーム・特商法ページまで掘る。</p>
+    </div>
+  </div>
+  <div style="display:flex; gap:10px; align-items:center;">
+    <a href="/manual" target="_blank" style="background:white; color:var(--orange); border:2px solid var(--orange); padding:8px 16px; border-radius:100px; font-size:12px; font-weight:700; text-decoration:none;">📘 使い方マニュアル</a>
+    <div class="badge" id="statusBadge">待機中</div>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="panel input-panel">
+    <h2>① 入力</h2>
+    <div class="form-grid">
+      <div class="form-row full">
+        <label for="companyText">会社名とURL（1行に1社、カンマ or タブ区切り）</label>
+        <textarea id="companyText" rows="10" placeholder="リクルートホールディングス, https://recruit-holdings.com/ja/
+パソナグループ, https://www.pasonagroup.co.jp/
+（3列目があれば「業種」として保存される）"></textarea>
+        <p class="hint">1行あたり「<code>会社名, URL</code>」、3列目があれば業種として記録。<code>#</code> で始まる行はコメント扱い。</p>
+      </div>
+      <div class="form-row">
+        <label for="defaultCategory">デフォルト業種（任意）</label>
+        <input id="defaultCategory" type="text" placeholder="例: 人材紹介 / IT / 不動産">
+      </div>
+      <div class="form-row">
+        <label for="delay">各社の間隔（秒）</label>
+        <input id="delay" type="number" min="0.5" step="0.5" value="2.0">
+        <p class="hint">サーバー負荷軽減。通常2秒でOK</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="runBtn" class="btn-primary">▶ 収集開始</button>
+      <button id="loadSampleBtn" class="btn-ghost">サンプル投入</button>
+      <label class="btn-ghost" style="cursor:pointer;">
+        📎 CSVアップロード
+        <input id="csvUpload" type="file" accept=".csv,.txt" style="display:none;">
+      </label>
+    </div>
+  </section>
+
+  <section class="panel progress-panel" id="progressPanel" style="display:none;">
+    <h2>② 進捗</h2>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-info">
+        <span id="progressText">0 / 0</span>
+        <span id="progressCurrent" class="progress-current"></span>
+      </div>
+    </div>
+    <div class="stats" id="stats">
+      <div class="stat"><span class="stat-num" id="statMail">0</span><span class="stat-label">メアド取得</span></div>
+      <div class="stat"><span class="stat-num" id="statForm">0</span><span class="stat-label">フォームあり</span></div>
+      <div class="stat"><span class="stat-num" id="statNone">0</span><span class="stat-label">取得不可</span></div>
+    </div>
+  </section>
+
+  <section class="panel result-panel" id="resultPanel" style="display:none;">
+    <div class="result-header">
+      <h2>③ 結果</h2>
+      <div class="download-buttons">
+        <button id="dlCsvBtn" class="btn-ghost" disabled>📥 CSV</button>
+        <button id="dlXlsxBtn" class="btn-primary" disabled>📊 Excel（装飾付き）</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="resultTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>会社名</th>
+            <th>公式URL</th>
+            <th>メアド</th>
+            <th>問い合わせ</th>
+            <th>業種</th>
+            <th>備考</th>
+          </tr>
+        </thead>
+        <tbody id="resultTbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>ローカル動作（localhost:5000）／ 制作：今井涼晴 ／ 2026年4月</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
